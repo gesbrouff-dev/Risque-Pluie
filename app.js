@@ -112,10 +112,18 @@ function analyzeWeatherForMoto() {
             results.slots.forEach(slot => {
                 const statusClass = getSlotStatusClass(slot.risk);
                 const timeStr = `${Math.floor(slot.start)}:${String(Math.round((slot.start % 1) * 60)).padStart(2, '0')} - ${Math.floor(slot.end)}:${String(Math.round((slot.end % 1) * 60)).padStart(2, '0')}`;
+                
+                let slotDetail = '';
+                if (slot.risk > 0) {
+                    slotDetail = `<div style="font-size: 0.85em; color: #666; margin-top: 5px;">Pluie: ${slot.rain.toFixed(2)} mm/h | Temp: ${slot.temp.toFixed(1)}°C</div>`;
+                }
+                
                 card.innerHTML += `
                     <div class="time-slot">
-                        <span>${timeStr}</span>
-                        <span class="${statusClass}">${getSlotStatus(slot.risk)}</span>
+                        <div style="flex-grow: 1;">
+                            <div><span>${timeStr}</span> <span class="${statusClass}">${getSlotStatus(slot.risk)}</span></div>
+                            ${slotDetail}
+                        </div>
                     </div>
                 `;
             });
@@ -126,21 +134,7 @@ function analyzeWeatherForMoto() {
 
     // Afficher les détails
     if (allSlots.length > 0) {
-        detailsContainer.style.display = 'block';
-        const avgRain = (allSlots.reduce((sum, s) => sum + s.rain, 0) / allSlots.length).toFixed(1);
-        const avgTemp = (allSlots.reduce((sum, s) => sum + s.temp, 0) / allSlots.length).toFixed(1);
-        
-        detailsContainer.innerHTML = `
-            <h3>📊 Moyennes sur tes trajets</h3>
-            <div class="detail-item">
-                <span class="detail-label">Température moyenne:</span>
-                <span>${avgTemp}°C</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">Pluie moyenne:</span>
-                <span>${avgRain} mm/h</span>
-            </div>
-        `;
+        detailsContainer.style.display = 'none';
     }
 }
 
