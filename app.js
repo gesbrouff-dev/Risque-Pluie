@@ -63,6 +63,7 @@ function analyzeWeatherForMoto() {
 
         const dayKey = DAYS[dayOfWeek];
         dayResults[dayKey] = {
+            date: new Date(targetDay),
             slots: [],
             dayRisk: 0
         };
@@ -97,7 +98,16 @@ function analyzeWeatherForMoto() {
         if (results.slots.length > 0) {
             const card = document.createElement('div');
             card.className = 'forecast-card';
-            card.innerHTML = `<h4>${day}</h4>`;
+            
+            // Formater la date complète
+            const formattedDate = results.date.toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            card.innerHTML = `<h4>${formattedDate}</h4>`;
             
             results.slots.forEach(slot => {
                 const statusClass = getSlotStatusClass(slot.risk);
