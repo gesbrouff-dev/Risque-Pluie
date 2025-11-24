@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏍️ Vérificateur Météo Moto</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🏍️ Peux-tu prendre ta moto?</h1>
+        <p class="subtitle">Vérification en temps réel des conditions météo pour tes trajets</p>
+        
+        <div id="message" class="status-loading">Chargement en cours...</div>
+        
+        <div class="schedule">
+            <h3>📅 Tes trajets à vérifier</h3>
+            <div class="day-schedule">
+                <strong>Lundi - Vendredi</strong>
+                <span>07:30 - 08:30 (matin) · 16:45 - 17:30 (soir)</span>
+            </div>
+            <div class="day-schedule">
+                <strong>Mercredi</strong>
+                <span>07:30 - 08:30 (matin) · 11:45 - 12:30 (midi) · 16:45 - 17:30 (soir)</span>
+            </div>
+            <div class="day-schedule">
+                <strong>Samedi</strong>
+                <span>13:30 - 14:00 · 15:00 - 15:30</span>
+            </div>
+        </div>
+
+        <div id="forecastContainer" class="forecast-grid"></div>
+        <div id="detailsContainer" class="details" style="display:none;"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
