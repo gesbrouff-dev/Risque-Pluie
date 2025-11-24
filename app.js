@@ -27,7 +27,7 @@ function success(position) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const messageElement = document.getElementById("message");
-    messageElement.textContent = "Récupération des données météo...";
+    messageElement.style.display = 'none';
 
     const weatherUrl = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${latitude}&lon=${longitude}`;
 
@@ -65,7 +65,8 @@ function analyzeWeatherForMoto() {
         dayResults[dayKey] = {
             date: new Date(targetDay),
             slots: [],
-            dayRisk: 0
+            dayRisk: 0,
+            betweenSlotsRain: null
         };
 
         SCHEDULE[dayOfWeek].forEach(slot => {
@@ -75,22 +76,15 @@ function analyzeWeatherForMoto() {
             dayResults[dayKey].dayRisk = Math.max(dayResults[dayKey].dayRisk, slotData.risk);
             overallRisk = Math.max(overallRisk, slotData.risk);
         });
-    }
 
-    // Afficher les résultats
-    let statusClass = 'status-ok';
-    let statusText = '✅ OUI! Tu peux prendre ta moto! 🎉';
-    
-    if (overallRisk === 1) {
-        statusClass = 'status-warning';
-        statusText = '⚠️ VIGILANCE - Conditions dégradées. À voir à l\'oeil.';
-    } else if (overallRisk === 2) {
-        statusClass = 'status-danger';
-        statusText = '🚫 NON - Risques importants. Pas recommandé.';
+        // Vérifier la pluie entre les créneaux
+        const slots = SCHEDULE[dayOfWeek];
+        if (slots.length > 1) {
+            const firstSlotStart = slots[0].start;
+            const lastSlotEnd = slots[slots.length - 1].end;
+            dayResults[dayKey].betweenSlotsRain = checkBetweenSlots(targetDay, firstSlotStart, lastSlotEnd);
+        }
     }
-
-    messageElement.className = statusClass;
-    messageElement.style.display = 'none';
 
     // Afficher les prévisions par jour
     forecastContainer.innerHTML = '';
@@ -127,6 +121,15 @@ function analyzeWeatherForMoto() {
                     </div>
                 `;
             });
+
+            // Afficher info pluie entre les créneaux si présente
+            if (results.betweenSlotsRain && results.betweenSlotsRain.hasRain) {
+                card.innerHTML += `
+                    <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 0.9em; border-left: 3px solid #ffc107;">
+                        💧 Pluie entre les créneaux: ${results.betweenSlotsRain.maxRain.toFixed(2)} mm/h
+                    </div>
+                `;
+            }
             
             forecastContainer.appendChild(card);
         }
@@ -136,6 +139,31 @@ function analyzeWeatherForMoto() {
     if (allSlots.length > 0) {
         detailsContainer.style.display = 'none';
     }
+}
+
+function checkBetweenSlots(date, startHour, endHour) {
+    const slotStart = new Date(date);
+    slotStart.setHours(Math.floor(startHour), Math.round((startHour % 1) * 60), 0, 0);
+    
+    const slotEnd = new Date(date);
+    slotEnd.setHours(Math.floor(endHour), Math.round((endHour % 1) * 60), 0, 0);
+
+    const slotData = weatherData.properties.timeseries.filter(item => {
+        const itemDate = new Date(item.time);
+        return itemDate >= slotStart && itemDate <= slotEnd;
+    });
+
+    let maxRain = 0;
+
+    slotData.forEach(item => {
+        const rain = item.data.next_1_hours?.details?.precipitation_amount ?? 0;
+        maxRain = Math.max(maxRain, rain);
+    });
+
+    return {
+        maxRain: maxRain,
+        hasRain: maxRain > 0.01
+    };
 }
 
 function checkTimeSlot(date, startHour, endHour) {
@@ -202,6 +230,7 @@ function showError(msg) {
     const messageElement = document.getElementById("message");
     messageElement.className = 'status-danger';
     messageElement.textContent = msg;
+    messageElement.style.display = 'block';
 }
 
 function error(err) {
