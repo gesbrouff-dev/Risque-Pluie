@@ -122,13 +122,21 @@ function analyzeWeatherForMoto() {
                 `;
             });
 
-            // Afficher info pluie entre les créneaux si présente
-            if (results.betweenSlotsRain && results.betweenSlotsRain.hasRain) {
-                card.innerHTML += `
-                    <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 0.9em; border-left: 3px solid #ffc107;">
-                        💧 Pluie entre les créneaux: ${results.betweenSlotsRain.maxRain.toFixed(2)} mm/h
-                    </div>
-                `;
+            // Afficher info pluie entre les créneaux
+            if (results.betweenSlotsRain) {
+                if (results.betweenSlotsRain.hasRain) {
+                    card.innerHTML += `
+                        <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 0.9em; border-left: 3px solid #ffc107;">
+                            💧 Pluie entre les créneaux: ${results.betweenSlotsRain.maxRain.toFixed(2)} mm/h
+                        </div>
+                    `;
+                } else {
+                    card.innerHTML += `
+                        <div style="margin-top: 10px; padding: 10px; background: #d4edda; border-radius: 5px; font-size: 0.9em; border-left: 3px solid #28a745;">
+                            ✅ Pas de pluie entre les créneaux
+                        </div>
+                    `;
+                }
             }
             
             forecastContainer.appendChild(card);
