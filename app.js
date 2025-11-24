@@ -90,7 +90,7 @@ function analyzeWeatherForMoto() {
     }
 
     messageElement.className = statusClass;
-    messageElement.innerHTML = `<strong>${statusText}</strong>`;
+    messageElement.style.display = 'none';
 
     // Afficher les prévisions par jour
     forecastContainer.innerHTML = '';
