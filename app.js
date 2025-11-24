@@ -1,7 +1,7 @@
 const SCHEDULE = {
     1: [{start: 7.5, end: 8.5}, {start: 16.75, end: 17.5}],      // Lundi
     2: [{start: 7.5, end: 8.5}, {start: 16.75, end: 17.5}],      // Mardi
-    3: [{start: 7.5, end: 8.5}, {start: 11.75, end: 12.5}, {start: 16.75, end: 17.5}], // Mercredi
+    3: [{start: 7.5, end: 8.5}, {start: 11.75, end: 12.5}],      // Mercredi
     4: [{start: 7.5, end: 8.5}, {start: 16.75, end: 17.5}],      // Jeudi
     5: [{start: 7.5, end: 8.5}, {start: 16.75, end: 17.5}],      // Vendredi
     6: [{start: 13.5, end: 14}, {start: 15, end: 15.5}]          // Samedi
@@ -169,7 +169,7 @@ function checkTimeSlot(date, startHour, endHour) {
         avgTemp += temp;
         count++;
 
-        if (temp <= 2 && rain > 0) {
+        if (temp <= 3 && rain > 0) {
             maxIcing = Math.max(maxIcing, rain);
         }
     });
@@ -177,8 +177,8 @@ function checkTimeSlot(date, startHour, endHour) {
     avgTemp = count > 0 ? avgTemp / count : 0;
 
     let risk = 0;
-    if (maxRain > 0.5 || maxIcing > 0) risk = 2;
-    else if (maxRain > 0.1) risk = 1;
+    if (maxRain > 0.1 || maxIcing > 0) risk = 2;
+    else if (maxRain > 0.01) risk = 1;
 
     return {
         start: startHour,
